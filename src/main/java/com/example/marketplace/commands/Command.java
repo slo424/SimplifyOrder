@@ -1,11 +1,12 @@
 package com.example.marketplace.commands;
 
-import com.example.marketplace.views.*;
+
+import com.example.marketplace.views.DealMerchantView;
 
 public interface Command {
 
     static DealMerchantView[] getDummyDeals() {
-        DealMerchantView[] merchantDealsViewsArr = new DealMerchantView[12];
+        final DealMerchantView[] merchantDealsViewsArr = new DealMerchantView[12];
         merchantDealsViewsArr[0] = new DealMerchantView(1L, 2L, "Apple", 1L, 1000L);
         merchantDealsViewsArr[1] = new DealMerchantView(2L, 4L, "Banana", 2L, 2000L);
         merchantDealsViewsArr[2] = new DealMerchantView(3L, 3L, "Carrot", 3L, 3000L);

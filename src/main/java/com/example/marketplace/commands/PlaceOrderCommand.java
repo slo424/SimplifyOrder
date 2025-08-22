@@ -1,44 +1,25 @@
 package com.example.marketplace.commands;
 
-import com.example.marketplace.models.SimpleDeal;
-import com.example.marketplace.views.*;
-import java.util.*;
-import lombok.Getter;
+import com.example.marketplace.models.Order;
+import com.example.marketplace.repositories.OrderRepository;
+import com.example.marketplace.views.OrderPlacementView;
+import javax.validation.constraints.NotEmpty;
 import lombok.Setter;
 
-import javax.validation.constraints.NotEmpty;
-import java.util.stream.Collectors;
+public class PlaceOrderCommand implements Command {
 
-@Getter
-@Setter
-class SimpleOrder {
-    private Long id;
+    @Setter
+    private OrderRepository orderRepository;
 
-    private int qty;
-}
-
-public class PlaceOrderCommand implements Command{
     @Setter
     @NotEmpty(message = "Cart cannot be empty.")
-    private SimpleOrder[] cart;
+    private Order[] cart;
 
-    @Setter
-    private String buyerName;
-
-    @Setter
-    private String buyerEmail;
-    
     @Override
-    public SimpleOrderPurchaseView execute() {
-        Map<Long, DealMerchantView> deals = Arrays.stream(Command.getDummyDeals())
-                .collect(Collectors.toMap(DealMerchantView::getId, simpleDeal -> simpleDeal));
+    public OrderPlacementView execute() {
+        for (Order order : cart)
+            orderRepository.save(order);
 
-        Long total = 0L;
-        for (SimpleOrder simpleOrder : cart) {
-            total += (deals.containsKey(simpleOrder.getId()) ? (deals.get(simpleOrder.getId()).getPrice() * simpleOrder.getQty()) : 0L);
-        }
-
-        return new SimpleOrderPurchaseView((long) (total*1.05), "");
+        return new OrderPlacementView(cart.length, cart[0].getTableNo(), "");
     }
 }
-
