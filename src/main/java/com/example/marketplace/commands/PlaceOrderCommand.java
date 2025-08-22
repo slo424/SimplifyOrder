@@ -1,14 +1,12 @@
 package com.example.marketplace.commands;
 
 import com.example.marketplace.models.SimpleDeal;
-import com.example.marketplace.views.SimpleOrderPurchaseView;
+import com.example.marketplace.views.*;
+import java.util.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter
@@ -32,12 +30,12 @@ public class PlaceOrderCommand implements Command{
     
     @Override
     public SimpleOrderPurchaseView execute() {
-        Map<Long, SimpleDeal> deals = Command.getSimpleDeals().stream()
-                .collect(Collectors.toMap(SimpleDeal::getId, simpleDeal -> simpleDeal));
+        Map<Long, DealMerchantView> deals = Arrays.stream(Command.getDummyDeals())
+                .collect(Collectors.toMap(DealMerchantView::getId, simpleDeal -> simpleDeal));
 
         Long total = 0L;
         for (SimpleOrder simpleOrder : cart) {
-            total += (deals.containsKey(simpleOrder.getId()) ? (deals.get(simpleOrder.getId()).getPriceInLong() * simpleOrder.getQty()) : 0L);
+            total += (deals.containsKey(simpleOrder.getId()) ? (deals.get(simpleOrder.getId()).getPrice() * simpleOrder.getQty()) : 0L);
         }
 
         return new SimpleOrderPurchaseView((long) (total*1.05), "");
