@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class GetMerchantDealsByMerIdCommand implements Command{
+public class GetDealsByMerchantIdCommand implements Command{
     @Setter
     private Long merchantId;
 

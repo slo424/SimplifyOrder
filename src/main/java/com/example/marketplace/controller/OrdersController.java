@@ -1,18 +1,16 @@
 package com.example.marketplace.controller;
 
-import com.example.marketplace.commands.GetDealByIdCommand;
+import com.example.marketplace.commands.GetBillByTableIdCommand;
 import com.example.marketplace.commands.GetDealsCommand;
-import com.example.marketplace.commands.GetMerchantDealsByMerIdCommand;
+import com.example.marketplace.commands.GetDealsByMerchantIdCommand;
 import com.example.marketplace.commands.PlaceOrderCommand;
-import com.example.marketplace.commands.UpdateDataCommand;
 import com.example.marketplace.models.Greeting;
 import com.example.marketplace.repositories.OrderRepository;
+import com.example.marketplace.views.TableBillView;
 import com.example.marketplace.views.DealInfoListView;
-import com.example.marketplace.views.DealInfoView;
 import com.example.marketplace.views.MerchantDealsView;
 import com.example.marketplace.views.OrderPlacementView;
 import jakarta.validation.Valid;
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,8 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 @RestController
-@RequestMapping("deals")
-public class DealsController {
+@RequestMapping("orders")
+public class OrdersController {
 
     @Autowired
     private OrderRepository orderRepository;
@@ -36,36 +34,28 @@ public class DealsController {
 
     private final AtomicLong counter = new AtomicLong();
 
-    @GetMapping
+    @GetMapping("/deals")
     public DealInfoListView getDeals(GetDealsCommand getDealsCommand) {
         return getDealsCommand.execute();
     }
 
-    @PostMapping("order")
+    @PostMapping()
     public OrderPlacementView placeOrder(@Valid @RequestBody PlaceOrderCommand placeOrderCommand) {
         placeOrderCommand.setOrderRepository(orderRepository);
         return placeOrderCommand.execute();
     }
 
-    @GetMapping("deal")
-    public DealInfoView getDealById(@Valid @RequestBody GetDealByIdCommand request) throws IOException {
-        try {
-            return new DealInfoView("", request.execute());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return new DealInfoView(e.getMessage(), null);
-        }
-    }
-
-    @GetMapping("/{id}")
-    public MerchantDealsView getDealById(@PathVariable Long id, @Valid @RequestBody GetMerchantDealsByMerIdCommand getDealByIdCommand) {
+    @GetMapping("/deals/{id}")
+    public MerchantDealsView getDealById(@PathVariable Long id, GetDealsByMerchantIdCommand getDealByIdCommand) {
         getDealByIdCommand.setMerchantId(id);
         return getDealByIdCommand.execute();
     }
 
-    @PostMapping("/data")
-    public void handleData(@RequestBody UpdateDataCommand updateDataCommand) {
-        updateDataCommand.execute();
+    @GetMapping("/bill/{id}")
+    public TableBillView getBill(@PathVariable Long id, GetBillByTableIdCommand getBillByTableNoCommand) {
+        getBillByTableNoCommand.setTableNo(id);
+        getBillByTableNoCommand.setOrderRepository(orderRepository);
+        return getBillByTableNoCommand.execute();
     }
 
     @GetMapping("/greeting-javaconfig")
